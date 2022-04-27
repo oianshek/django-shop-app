@@ -1,11 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class UserAccountManager(BaseUserManager):
-    
+
     def create_superuser(self, email, username, password, **other_fields):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_active', True)
@@ -27,7 +26,7 @@ class UserAccountManager(BaseUserManager):
         return self.create(email, username, password, **other_fields)
 
     def create_user(self, email, username, password, **other_fields):
-        
+
         if not email:
             raise ValueError(_('You must provide an email address'))
 
@@ -38,8 +37,8 @@ class UserAccountManager(BaseUserManager):
 
         return user
 
-class UserAccount(AbstractBaseUser, PermissionsMixin):
 
+class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150)

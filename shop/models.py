@@ -7,6 +7,7 @@ class ItemManager(models.Manager):
     def get_queryset(self):
         return super(ItemManager, self).get_queryset().filter(is_active=True)
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     slug = models.SlugField(max_length=255, unique=True, verbose_name="URL")
@@ -19,7 +20,8 @@ class Category(models.Model):
         ordering = ['id']
 
     def get_absolute_url(self):
-        return reverse('shop:category_list',args=[self.slug])
+        return reverse('shop:category_list', args=[self.slug])
+
 
 class Item(models.Model):
     category = models.ForeignKey(Category, related_name='item', on_delete=models.CASCADE)
@@ -44,4 +46,4 @@ class Item(models.Model):
         ordering = ['-created']
 
     def get_absolute_url(self):
-        return reverse('shop:item_detail',args=[self.slug])
+        return reverse('shop:item_detail', args=[self.slug])

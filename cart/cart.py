@@ -1,15 +1,16 @@
 from shop.models import Item
 from decimal import Decimal
 
-class Cart():
-    
+
+class Cart:
+
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get('skey')
-        
+
         if 'skey' not in request.session:
             cart = self.session['skey'] = {}
-        
+
         self.cart = cart
 
     def add(self, item, item_qty):
@@ -57,7 +58,7 @@ class Cart():
         Collect the product_id in the session data to query the database
         and return products
         """
-        item_ids = self.cart.keys() 
+        item_ids = self.cart.keys()
         items = Item.items.filter(id__in=item_ids)
         cart = self.cart.copy()
 
