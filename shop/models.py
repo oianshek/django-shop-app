@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -23,7 +23,7 @@ class Category(models.Model):
 
 class Item(models.Model):
     category = models.ForeignKey(Category, related_name='item', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, related_name='item_creator', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='item_creator', on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
