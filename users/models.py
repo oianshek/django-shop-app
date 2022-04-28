@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -23,7 +24,7 @@ class UserAccountManager(BaseUserManager):
                 'Superuser must have is_superuser True'
             )
 
-        return self.create(email, username, password, **other_fields)
+        return self.create_user(email, username, password, **other_fields)
 
     def create_user(self, email, username, password, **other_fields):
 
@@ -48,12 +49,23 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    objects = UserAccountManager()
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     class Meta:
         verbose_name = "Users"
         verbose_name_plural = "Users"
+
+    def email_user(self, subject, message):
+        send_mail(
+            subject,
+            message,
+            'l@1.com',
+            [self.email],
+            fail_silently=False,
+        )
 
     def __str__(self):
         return self.email
