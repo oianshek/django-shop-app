@@ -1,11 +1,13 @@
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from .forms import RegistrationForm
+from .models import UserAccount
 from .token import account_activation_token
 
 
@@ -37,5 +39,25 @@ def register(request):
     return render(request, 'users/registration/register.html', {'form': registrationForm})
 
 
-def activate():
-    return "hello"
+def activate(request, uid64, token):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uid64))
+        user = UserAccount.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, user.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return redirect('users:dashboard')
+    else:
+        return render(request, 'users/registration/activation_invalid.html')
+
+
+@login_required
+def dashboard(request):
+    orders = user_orders(request)
+    return render(request,
+                  'users/user/dashboard.html',
+                  {'section': 'profile', 'orders': orders})
