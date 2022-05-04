@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+
 from .models import UserAccount
 
 
@@ -14,6 +16,21 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         model = UserAccount
         fields = ('email', 'username', 'first_name', 'last_name',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update(
+            {'class': 'form-control mb-3', 'placeholder': 'E-mail', 'name': 'email', 'id': 'id_email'})
+        self.fields['username'].widget.attrs.update(
+            {'class': 'form-control mb-3', 'placeholder': 'Username'})
+        self.fields['first_name'].widget.attrs.update(
+            {'class': 'form-control mb-3', 'placeholder': 'First Name'})
+        self.fields['last_name'].widget.attrs.update(
+            {'class': 'form-control mb-3', 'placeholder': 'Last Name'})
+        self.fields['password'].widget.attrs.update(
+            {'class': 'form-control mb-3', 'placeholder': 'Password'})
+        self.fields['re_password'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Repeat Password'})
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -35,17 +52,15 @@ class RegistrationForm(forms.ModelForm):
             raise forms.ValidationError("Passwords are not equal!")
         return data['re_password']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': 'E-mail', 'name': 'email', 'id': 'id_email'})
-        self.fields['username'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': 'Username'})
-        self.fields['first_name'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': 'First Name'})
-        self.fields['last_name'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': 'Last Name'})
-        self.fields['password'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': 'Password'})
-        self.fields['re_password'].widget.attrs.update(
-            {'class': 'form-control', 'placeholder': 'Repeat Password'})
+
+class UserLoginForm(AuthenticationForm):
+
+    username = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control mb-3', 'placeholder': 'Username', 'id': 'login-username'}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'id': 'login-pwd',
+        }
+    ))

@@ -1,6 +1,7 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
@@ -33,6 +34,7 @@ def register(request):
                 'token': account_activation_token.make_token(user),
             })
             user.email_user(subject=subject, message=message)
+            return HttpResponse('Successfully registered and activation sent')
     else:
         registrationForm = RegistrationForm()
 
@@ -57,7 +59,4 @@ def activate(request, uid64, token):
 
 @login_required
 def dashboard(request):
-    orders = user_orders(request)
-    return render(request,
-                  'users/user/dashboard.html',
-                  {'section': 'profile', 'orders': orders})
+    return render(request, 'users/user/dashboard.html')
